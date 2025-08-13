@@ -111,10 +111,21 @@ const getDoctorAppointments = (doctorId) => {
                   <div className="mt-4 pt-4 border-t border-gray-200">
                     <h4 className="text-sm font-medium text-gray-900 mb-2">Availability</h4>
                     <div className="flex flex-wrap gap-2">
-                      {(() => {
+{(() => {
                         const availability = doctor.availability_c || doctor.availability;
-                        const availabilityObj = typeof availability === 'string' ? 
-                          JSON.parse(availability || '{}') : availability;
+                        let availabilityObj = {};
+                        
+                        if (typeof availability === 'string') {
+                          try {
+                            availabilityObj = JSON.parse(availability || '{}');
+                          } catch (error) {
+                            console.error('Error parsing availability JSON:', error);
+                            availabilityObj = {};
+                          }
+                        } else if (typeof availability === 'object' && availability !== null) {
+                          availabilityObj = availability;
+                        }
+                        
                         return Object.entries(availabilityObj).map(([day, hours]) => (
                           hours && (
                             <Badge key={day} variant="outline">
