@@ -5,14 +5,14 @@ import ApperIcon from "@/components/ApperIcon";
 import { toast } from "react-toastify";
 
 const PatientForm = ({ patient = null, onSubmit, onCancel }) => {
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     name: patient?.name || "",
     dateOfBirth: patient?.dateOfBirth || "",
     gender: patient?.gender || "Male",
     phone: patient?.phone || "",
     email: patient?.email || "",
     address: patient?.address || "",
-    allergies: patient?.allergies?.join(", ") || "",
+    allergies: patient?.allergies || [],
     currentMedications: patient?.currentMedications?.join(", ") || "",
     emergencyContactName: patient?.emergencyContact?.name || "",
     emergencyContactPhone: patient?.emergencyContact?.phone || "",
@@ -112,13 +112,38 @@ const PatientForm = ({ patient = null, onSubmit, onCancel }) => {
         />
       </div>
 
-      <div className="space-y-4">
-        <Input
-          label="Allergies (comma separated)"
-          value={formData.allergies}
-          onChange={(e) => handleChange("allergies", e.target.value)}
-          placeholder="Penicillin, Peanuts, etc."
-        />
+<div className="space-y-4">
+        <div>
+          <label className="form-label">Allergies</label>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2">
+            {[
+              "Penicillin",
+              "Shellfish", 
+              "Latex",
+              "Peanuts",
+              "Sulfa drugs",
+              "Iodine",
+              "Codeine",
+              "Morphine",
+              "Contrast dye"
+            ].map((allergy) => (
+              <label key={allergy} className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.allergies.includes(allergy)}
+                  onChange={(e) => {
+                    const newAllergies = e.target.checked
+                      ? [...formData.allergies, allergy]
+                      : formData.allergies.filter(a => a !== allergy);
+                    handleChange("allergies", newAllergies);
+                  }}
+                  className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary focus:ring-2"
+                />
+                <span className="text-sm text-gray-700">{allergy}</span>
+              </label>
+            ))}
+          </div>
+        </div>
 
         <Input
           label="Current Medications (comma separated)"
