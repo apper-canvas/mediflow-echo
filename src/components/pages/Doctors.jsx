@@ -36,13 +36,15 @@ const Doctors = () => {
     }
   };
 
-  const getDoctorAppointments = (doctorId) => {
-    return appointments.filter(apt => apt.doctorId === doctorId);
+const getDoctorAppointments = (doctorId) => {
+    return appointments.filter(apt => (apt.doctor_id_c?.Id || apt.doctor_id_c || apt.doctorId) === doctorId);
   };
 
   const getTodayAppointments = (doctorId) => {
     const today = new Date().toISOString().split('T')[0];
-    return appointments.filter(apt => apt.doctorId === doctorId && apt.date === today);
+    return appointments.filter(apt => 
+      (apt.doctor_id_c?.Id || apt.doctor_id_c || apt.doctorId) === doctorId && 
+      (apt.date_c || apt.date) === today);
   };
 
   if (loading) return <Loading type="table" />;
@@ -77,8 +79,8 @@ const Doctors = () => {
                       <ApperIcon name="UserCheck" className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">Dr. {doctor.name}</h3>
-                      <Badge variant="primary">{doctor.specialization}</Badge>
+<h3 className="text-lg font-semibold text-gray-900">Dr. {doctor.Name || doctor.name}</h3>
+                      <Badge variant="primary">{doctor.specialization_c || doctor.specialization}</Badge>
                     </div>
                   </div>
                 </div>
@@ -86,11 +88,11 @@ const Doctors = () => {
                 <div className="space-y-3 mb-4">
                   <div className="flex items-center text-gray-600">
                     <ApperIcon name="Mail" className="h-4 w-4 mr-2" />
-                    <span className="text-sm">{doctor.email}</span>
+                    <span className="text-sm">{doctor.email_c || doctor.email}</span>
                   </div>
                   <div className="flex items-center text-gray-600">
                     <ApperIcon name="Phone" className="h-4 w-4 mr-2" />
-                    <span className="text-sm">{doctor.phone}</span>
+                    <span className="text-sm">{doctor.phone_c || doctor.phone}</span>
                   </div>
                 </div>
 
@@ -105,17 +107,22 @@ const Doctors = () => {
                   </div>
                 </div>
 
-                {doctor.availability && (
+{(doctor.availability_c || doctor.availability) && (
                   <div className="mt-4 pt-4 border-t border-gray-200">
                     <h4 className="text-sm font-medium text-gray-900 mb-2">Availability</h4>
                     <div className="flex flex-wrap gap-2">
-                      {Object.entries(doctor.availability).map(([day, hours]) => (
-                        hours && (
-                          <Badge key={day} variant="outline">
-                            {day}: {hours}
-                          </Badge>
-                        )
-                      ))}
+                      {(() => {
+                        const availability = doctor.availability_c || doctor.availability;
+                        const availabilityObj = typeof availability === 'string' ? 
+                          JSON.parse(availability || '{}') : availability;
+                        return Object.entries(availabilityObj).map(([day, hours]) => (
+                          hours && (
+                            <Badge key={day} variant="outline">
+                              {day}: {hours}
+                            </Badge>
+                          )
+                        ));
+                      })()}
                     </div>
                   </div>
                 )}

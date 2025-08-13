@@ -6,14 +6,14 @@ import { patientService } from "@/services/api/patientService";
 import { doctorService } from "@/services/api/doctorService";
 
 const AppointmentForm = ({ appointment = null, onSubmit, onCancel }) => {
-  const [formData, setFormData] = useState({
-    patientId: appointment?.patientId || "",
-    doctorId: appointment?.doctorId || "",
-    date: appointment?.date || "",
-    time: appointment?.time || "",
-    duration: appointment?.duration || 30,
-    type: appointment?.type || "Consultation",
-    notes: appointment?.notes || ""
+const [formData, setFormData] = useState({
+    patientId: appointment?.patient_id_c?.Id || appointment?.patient_id_c || appointment?.patientId || "",
+    doctorId: appointment?.doctor_id_c?.Id || appointment?.doctor_id_c || appointment?.doctorId || "",
+    date: appointment?.date_c || appointment?.date || "",
+    time: appointment?.time_c || appointment?.time || "",
+    duration: appointment?.duration_c || appointment?.duration || 30,
+    type: appointment?.type_c || appointment?.type || "Consultation",
+    notes: appointment?.notes_c || appointment?.notes || ""
   });
   const [patients, setPatients] = useState([]);
   const [doctors, setDoctors] = useState([]);
@@ -86,26 +86,26 @@ const AppointmentForm = ({ appointment = null, onSubmit, onCancel }) => {
             required
           >
             <option value="">Select a patient</option>
-            {patients.map((patient) => (
+{patients.map((patient) => (
               <option key={patient.Id} value={patient.Id}>
-                {patient.name} - {patient.medicalId}
+                {patient.Name || patient.name} - {patient.medical_id_c || patient.medicalId}
               </option>
             ))}
           </select>
         </div>
 
         <div>
-          <label className="form-label">Doctor *</label>
+          <label className="form-label">Doctor</label>
           <select
             value={formData.doctorId}
             onChange={(e) => handleChange("doctorId", e.target.value)}
             className="form-input"
             required
           >
-            <option value="">Select a doctor</option>
+            <option value="">Select Doctor</option>
             {doctors.map((doctor) => (
               <option key={doctor.Id} value={doctor.Id}>
-                Dr. {doctor.name} - {doctor.specialization}
+                Dr. {doctor.Name || doctor.name} - {doctor.specialization_c || doctor.specialization}
               </option>
             ))}
           </select>

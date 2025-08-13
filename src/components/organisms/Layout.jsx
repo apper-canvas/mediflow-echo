@@ -1,11 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { useSelector } from 'react-redux';
 import Sidebar from "@/components/organisms/Sidebar";
 import Header from "@/components/organisms/Header";
+import { AuthContext } from "../../App";
 
 const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const { isAuthenticated } = useSelector((state) => state.user);
+  const { isInitialized } = useContext(AuthContext);
 
+  // Don't render layout if not authenticated or not initialized
+  if (!isInitialized || !isAuthenticated) {
+    return null;
+  }
   return (
     <div className="min-h-screen bg-surface">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />

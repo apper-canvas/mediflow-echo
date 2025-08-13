@@ -89,7 +89,7 @@ const Appointments = () => {
     }
   };
 
-  const getPatientById = (id) => patients.find(p => p.Id === id);
+const getPatientById = (id) => patients.find(p => p.Id === id);
   const getDoctorById = (id) => doctors.find(d => d.Id === id);
 
   const filteredAppointments = appointments.filter(appointment => {
@@ -188,40 +188,40 @@ const Appointments = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredAppointments.map((appointment) => {
-                  const patient = getPatientById(appointment.patientId);
-                  const doctor = getDoctorById(appointment.doctorId);
+{filteredAppointments.map((appointment) => {
+                  const patient = getPatientById(appointment.patient_id_c?.Id || appointment.patient_id_c);
+                  const doctor = getDoctorById(appointment.doctor_id_c?.Id || appointment.doctor_id_c);
                   
                   return (
                     <tr key={appointment.Id} className="border-b border-gray-100 hover:bg-gray-50">
                       <td className="py-4 px-4">
                         <div>
-                          <div className="font-medium text-gray-900">{patient?.name}</div>
-                          <div className="text-sm text-gray-500">{patient?.medicalId}</div>
+                          <div className="font-medium text-gray-900">{patient?.Name || patient?.name}</div>
+                          <div className="text-sm text-gray-500">{patient?.medical_id_c || patient?.medicalId}</div>
                         </div>
                       </td>
                       <td className="py-4 px-4">
                         <div>
-                          <div className="font-medium text-gray-900">Dr. {doctor?.name}</div>
-                          <div className="text-sm text-gray-500">{doctor?.specialization}</div>
+                          <div className="font-medium text-gray-900">Dr. {doctor?.Name || doctor?.name}</div>
+                          <div className="text-sm text-gray-500">{doctor?.specialization_c || doctor?.specialization}</div>
                         </div>
                       </td>
                       <td className="py-4 px-4">
                         <div>
                           <div className="font-medium text-gray-900">
-                            {format(new Date(appointment.date), "MMM dd, yyyy")}
+                            {format(new Date(appointment.date_c || appointment.date), "MMM dd, yyyy")}
                           </div>
                           <div className="text-sm text-gray-500">
-                            {appointment.time} ({appointment.duration} min)
+                            {appointment.time_c || appointment.time} ({appointment.duration_c || appointment.duration} min)
                           </div>
                         </div>
                       </td>
                       <td className="py-4 px-4">
-                        <span className="text-sm text-gray-900">{appointment.type}</span>
+                        <span className="text-sm text-gray-900">{appointment.type_c || appointment.type}</span>
                       </td>
                       <td className="py-4 px-4">
-                        <Badge variant={getStatusColor(appointment.status)}>
-                          {appointment.status}
+                        <Badge variant={getStatusColor(appointment.status_c || appointment.status)}>
+                          {appointment.status_c || appointment.status}
                         </Badge>
                       </td>
                       <td className="py-4 px-4">
@@ -238,7 +238,7 @@ const Appointments = () => {
                           >
                             <ApperIcon name="Trash2" className="h-4 w-4" />
                           </button>
-                          {appointment.status === "scheduled" && (
+                          {(appointment.status_c || appointment.status) === "scheduled" && (
                             <button
                               onClick={() => handleStatusChange(appointment.Id, "in-progress")}
                               className="px-3 py-1 text-xs bg-warning text-white rounded-full hover:bg-yellow-600 transition-colors"
@@ -246,7 +246,7 @@ const Appointments = () => {
                               Start
                             </button>
                           )}
-                          {appointment.status === "in-progress" && (
+                          {(appointment.status_c || appointment.status) === "in-progress" && (
                             <button
                               onClick={() => handleStatusChange(appointment.Id, "completed")}
                               className="px-3 py-1 text-xs bg-success text-white rounded-full hover:bg-green-600 transition-colors"

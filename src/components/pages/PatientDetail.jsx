@@ -43,8 +43,10 @@ patientService.getById(parseInt(id)),
       }
 
       setPatient(patientData);
-      setAppointments(appointmentsData.filter(apt => apt.patientId === parseInt(id)));
-      setMedicalRecords(recordsData.filter(record => record.patientId === parseInt(id)));
+setAppointments(appointmentsData.filter(apt => 
+        (apt.patient_id_c?.Id || apt.patient_id_c || apt.patientId) === parseInt(id)));
+      setMedicalRecords(recordsData.filter(record => 
+        (record.patient_id_c?.Id || record.patient_id_c || record.patientId) === parseInt(id)));
     } catch (err) {
       setError("Failed to load patient data");
     } finally {
@@ -116,9 +118,9 @@ const handleUpdatePatient = async (patientData) => {
               <ApperIcon name="User" className="h-8 w-8 text-primary" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{patient.name}</h1>
-              <p className="text-gray-600">Medical ID: {patient.medicalId}</p>
-              <Badge variant="primary">{patient.gender}</Badge>
+<h1 className="text-2xl font-bold text-gray-900">{patient.Name || patient.name}</h1>
+              <p className="text-gray-600">Medical ID: {patient.medical_id_c || patient.medicalId}</p>
+              <Badge variant="primary">{patient.gender_c || patient.gender}</Badge>
             </div>
           </div>
         </div>
@@ -129,15 +131,15 @@ const handleUpdatePatient = async (patientData) => {
             <div className="space-y-2">
               <div className="flex items-center text-gray-900">
                 <ApperIcon name="Phone" className="h-4 w-4 mr-2 text-gray-400" />
-                {patient.phone}
+{patient.phone_c || patient.phone}
               </div>
               <div className="flex items-center text-gray-900">
                 <ApperIcon name="Mail" className="h-4 w-4 mr-2 text-gray-400" />
-                {patient.email || "Not provided"}
+                {patient.email_c || patient.email || "Not provided"}
               </div>
               <div className="flex items-start text-gray-900">
                 <ApperIcon name="MapPin" className="h-4 w-4 mr-2 mt-1 text-gray-400" />
-                <span>{patient.address || "Not provided"}</span>
+                <span>{patient.address_c || patient.address || "Not provided"}</span>
               </div>
             </div>
           </div>
@@ -146,27 +148,27 @@ const handleUpdatePatient = async (patientData) => {
             <h3 className="text-sm font-medium text-gray-500 mb-2">Personal Information</h3>
             <div className="space-y-2">
               <div className="flex items-center text-gray-900">
-                <ApperIcon name="Calendar" className="h-4 w-4 mr-2 text-gray-400" />
-                Born: {format(new Date(patient.dateOfBirth), "MMM dd, yyyy")}
+<ApperIcon name="Calendar" className="h-4 w-4 mr-2 text-gray-400" />
+                Born: {format(new Date(patient.date_of_birth_c || patient.dateOfBirth), "MMM dd, yyyy")}
               </div>
             </div>
           </div>
 
-          {patient.emergencyContact?.name && (
+{(patient.emergency_contact_name_c || patient.emergencyContact?.name) && (
             <div>
               <h3 className="text-sm font-medium text-gray-500 mb-2">Emergency Contact</h3>
               <div className="space-y-2">
                 <div className="flex items-center text-gray-900">
                   <ApperIcon name="User" className="h-4 w-4 mr-2 text-gray-400" />
-                  {patient.emergencyContact.name}
+                  {patient.emergency_contact_name_c || patient.emergencyContact?.name}
                 </div>
                 <div className="flex items-center text-gray-900">
                   <ApperIcon name="Phone" className="h-4 w-4 mr-2 text-gray-400" />
-                  {patient.emergencyContact.phone}
+                  {patient.emergency_contact_phone_c || patient.emergencyContact?.phone}
                 </div>
                 <div className="flex items-center text-gray-900">
                   <ApperIcon name="Users" className="h-4 w-4 mr-2 text-gray-400" />
-                  {patient.emergencyContact.relation}
+                  {patient.emergency_contact_relation_c || patient.emergencyContact?.relation}
                 </div>
               </div>
             </div>
@@ -177,37 +179,49 @@ const handleUpdatePatient = async (patientData) => {
         {(patient.allergies?.length > 0 || patient.currentMedications?.length > 0) && (
           <div className="mt-8 pt-6 border-t border-gray-200">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {patient.allergies?.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-2 flex items-center">
-                    <ApperIcon name="AlertTriangle" className="h-4 w-4 mr-2 text-warning" />
-                    Allergies
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {patient.allergies.map((allergy, index) => (
-                      <Badge key={index} variant="warning">
-                        {allergy}
-                      </Badge>
-                    ))}
+{(() => {
+                const allergies = patient.allergies_c || patient.allergies;
+                const allergyArray = allergies ? 
+                  (typeof allergies === 'string' ? allergies.split(',').map(a => a.trim()) : allergies) : 
+                  [];
+                return allergyArray.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-500 mb-2 flex items-center">
+                      <ApperIcon name="AlertTriangle" className="h-4 w-4 mr-2 text-warning" />
+                      Allergies
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {allergyArray.map((allergy, index) => (
+                        <Badge key={index} variant="warning">
+                          {allergy}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
-              {patient.currentMedications?.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-2 flex items-center">
-                    <ApperIcon name="Pill" className="h-4 w-4 mr-2 text-info" />
-                    Current Medications
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {patient.currentMedications.map((medication, index) => (
-                      <Badge key={index} variant="primary">
-                        {medication}
-                      </Badge>
-                    ))}
+              {(() => {
+                const medications = patient.current_medications_c || patient.currentMedications;
+                const medicationArray = medications ? 
+                  (typeof medications === 'string' ? medications.split(',').map(m => m.trim()) : medications) : 
+                  [];
+                return medicationArray.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-500 mb-2 flex items-center">
+                      <ApperIcon name="Pill" className="h-4 w-4 mr-2 text-info" />
+                      Current Medications
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {medicationArray.map((medication, index) => (
+                        <Badge key={index} variant="primary">
+                          {medication}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
             </div>
           </div>
         )}
@@ -242,15 +256,15 @@ const handleUpdatePatient = async (patientData) => {
         ) : (
           <div className="space-y-4">
             {medicalRecords.map((record) => (
-              <div key={record.Id} className="border border-gray-200 rounded-lg p-4">
+<div key={record.Id} className="border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium text-gray-900">{record.diagnosis}</h3>
+                  <h3 className="font-medium text-gray-900">{record.diagnosis_c || record.diagnosis}</h3>
                   <span className="text-sm text-gray-500">
-                    {format(new Date(record.visitDate), "MMM dd, yyyy")}
+                    {format(new Date(record.visit_date_c || record.visitDate), "MMM dd, yyyy")}
                   </span>
                 </div>
                 
-                <p className="text-gray-700 text-sm mb-3">{record.treatment}</p>
+                <p className="text-gray-700 text-sm mb-3">{record.treatment_c || record.treatment}</p>
                 
                 {record.prescriptions && record.prescriptions.length > 0 && (
                   <div className="space-y-2">
@@ -280,20 +294,20 @@ const handleUpdatePatient = async (patientData) => {
         ) : (
           <div className="space-y-4">
             {appointments.map((appointment) => (
-              <div key={appointment.Id} className="border border-gray-200 rounded-lg p-4">
+<div key={appointment.Id} className="border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center space-x-2">
-                    <Badge variant={appointment.status.toLowerCase().replace('-', '')}>
-                      {appointment.status}
+                    <Badge variant={(appointment.status_c || appointment.status).toLowerCase().replace('-', '')}>
+                      {appointment.status_c || appointment.status}
                     </Badge>
-                    <span className="text-sm text-gray-600">{appointment.type}</span>
+                    <span className="text-sm text-gray-600">{appointment.type_c || appointment.type}</span>
                   </div>
                   <span className="text-sm text-gray-500">
-                    {format(new Date(appointment.date), "MMM dd, yyyy")} at {appointment.time}
+                    {format(new Date(appointment.date_c || appointment.date), "MMM dd, yyyy")} at {appointment.time_c || appointment.time}
                   </span>
                 </div>
-                {appointment.notes && (
-                  <p className="text-gray-700 text-sm">{appointment.notes}</p>
+                {(appointment.notes_c || appointment.notes) && (
+                  <p className="text-gray-700 text-sm">{appointment.notes_c || appointment.notes}</p>
                 )}
               </div>
             ))}

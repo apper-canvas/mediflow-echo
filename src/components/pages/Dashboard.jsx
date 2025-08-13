@@ -40,13 +40,13 @@ const Dashboard = () => {
       setDoctors(doctorsData);
 
       // Filter today's appointments
-      const today = new Date().toISOString().split('T')[0];
-      const todayAppts = appointmentsData.filter(apt => apt.date === today);
+const today = new Date().toISOString().split('T')[0];
+      const todayAppts = appointmentsData.filter(apt => (apt.date_c || apt.date) === today);
       setTodayAppointments(todayAppts);
 
-      // Calculate stats
-      const inProgressCount = todayAppts.filter(apt => apt.status === "in-progress").length;
-      const completedCount = todayAppts.filter(apt => apt.status === "completed").length;
+// Calculate stats
+      const inProgressCount = todayAppts.filter(apt => (apt.status_c || apt.status) === "in-progress").length;
+      const completedCount = todayAppts.filter(apt => (apt.status_c || apt.status) === "completed").length;
 
       setStats({
         totalPatients: patientsData.length,
@@ -131,12 +131,12 @@ const Dashboard = () => {
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {todayAppointments.map((appointment) => (
+{todayAppointments.map((appointment) => (
               <AppointmentCard
                 key={appointment.Id}
                 appointment={appointment}
-                patient={getPatientById(appointment.patientId)}
-                doctor={getDoctorById(appointment.doctorId)}
+                patient={getPatientById(appointment.patient_id_c?.Id || appointment.patient_id_c)}
+                doctor={getDoctorById(appointment.doctor_id_c?.Id || appointment.doctor_id_c)}
                 onStatusChange={handleStatusChange}
               />
             ))}

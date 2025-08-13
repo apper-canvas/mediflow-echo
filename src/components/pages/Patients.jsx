@@ -43,11 +43,11 @@ const Patients = () => {
       return;
     }
 
-    const filtered = patients.filter(patient =>
-      patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      patient.phone.includes(searchTerm) ||
-      patient.medicalId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      patient.email.toLowerCase().includes(searchTerm.toLowerCase())
+const filtered = patients.filter(patient =>
+      (patient.Name || patient.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (patient.phone_c || patient.phone || "").includes(searchTerm) ||
+      (patient.medical_id_c || patient.medicalId || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (patient.email_c || patient.email || "").toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredPatients(filtered);
   };
